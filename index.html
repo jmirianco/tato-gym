@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Tato — Off Season S6</title>
+<title>Rutina de Gimnasio</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap');
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -15,23 +15,23 @@
   body { background: var(--bg); color: var(--text); font-family: 'Barlow', sans-serif; min-height: 100vh; padding: 0 0 90px; }
   header { background: var(--bg); border-bottom: 2px solid var(--accent); padding: 16px 20px 12px; position: sticky; top: 0; z-index: 100; display: flex; align-items: baseline; gap: 12px; }
   header h1 { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.6rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); }
-  header span { font-family: 'Barlow Condensed', sans-serif; font-weight: 400; font-size: 1rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
-  .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); margin-left: auto; transition: background 0.3s; }
+  .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); margin-left: auto; transition: background 0.3s; flex-shrink: 0; }
   .sync-dot.ok { background: var(--accent); }
   .sync-dot.err { background: #ff4444; }
   .sync-dot.loading { background: #ffaa00; animation: pulse 1s infinite; }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-  .day-tabs { display: flex; background: var(--surface); border-bottom: 1px solid var(--border); }
-  .day-tab { flex: 1; padding: 14px 8px; text-align: center; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; border: none; background: transparent; color: var(--muted); border-bottom: 3px solid transparent; transition: color 0.15s, border-color 0.15s; }
+  .main-tabs { display: flex; background: var(--surface); border-bottom: 2px solid var(--border); }
+  .main-tab { flex: 1; padding: 12px 8px; text-align: center; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.08em; cursor: pointer; border: none; background: transparent; color: var(--muted); border-bottom: 3px solid transparent; margin-bottom: -2px; transition: color 0.15s, border-color 0.15s; }
+  .main-tab.active { color: var(--accent); border-color: var(--accent); }
+  .day-tabs { display: flex; background: var(--surface2); border-bottom: 1px solid var(--border); }
+  .day-tab { flex: 1; padding: 12px 8px; text-align: center; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; border: none; background: transparent; color: var(--muted); border-bottom: 3px solid transparent; transition: color 0.15s, border-color 0.15s; }
   .day-tab[data-day="0"].active { color: #d4ff00; border-color: #d4ff00; }
   .day-tab[data-day="1"].active { color: #00d4ff; border-color: #00d4ff; }
   .day-tab[data-day="2"].active { color: #ff6b35; border-color: #ff6b35; }
-  .day-tab:hover { color: var(--text); }
   .btn { padding: 6px 16px; border-radius: 4px; border: none; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; transition: opacity 0.15s; }
   .btn:hover { opacity: 0.85; }
   .btn-accent { background: var(--accent); color: #000; }
   .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--muted); }
-  .btn-outline:hover { color: var(--text); border-color: var(--muted); }
   .day-content { display: none; }
   .day-content.active { display: block; }
   .block-label { padding: 8px 16px 4px; font-family: 'Barlow Condensed', sans-serif; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-top: 10px; }
@@ -54,7 +54,7 @@
   .history-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 6px; }
   .history-entry { font-size: 0.8rem; color: var(--muted); padding: 3px 0; border-bottom: 1px solid var(--border); display: flex; gap: 8px; }
   .history-date { color: var(--accent-dim); min-width: 84px; }
-  .save-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1px solid var(--border); padding: 10px 12px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .save-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1px solid var(--border); padding: 10px 12px; display: flex; gap: 8px; align-items: center; }
   .save-bar .status { flex: 1; font-size: 0.78rem; color: var(--accent-dim); min-width: 100px; }
   .toast { position: fixed; top: 70px; right: 16px; background: var(--accent); color: #000; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 8px 18px; border-radius: 4px; font-size: 0.9rem; opacity: 0; transform: translateY(-8px); transition: all 0.2s; pointer-events: none; z-index: 200; }
   .toast.show { opacity: 1; transform: translateY(0); }
@@ -65,28 +65,50 @@
   .date-row { padding: 8px 12px 4px; display: flex; align-items: center; gap: 8px; }
   .date-row label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
   .date-row input[type="date"] { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 4px 10px; border-radius: 4px; font-family: 'Barlow', sans-serif; font-size: 0.85rem; }
+  #screen-progress { display: none; padding: 16px 12px 100px; }
+  #screen-progress.active { display: block; }
+  #screen-training { display: none; }
+  #screen-training.active { display: block; }
+  .progress-screen-title { font-family: 'Barlow Condensed', sans-serif; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 10px; }
+  .ex-selector { width: 100%; background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 4px; font-family: 'Barlow', sans-serif; font-size: 0.9rem; margin-bottom: 16px; }
+  .chart-container { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 16px 8px 8px; margin-bottom: 16px; }
+  .chart-title { font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text); margin-bottom: 4px; padding: 0 8px; }
+  .chart-subtitle { font-size: 0.75rem; color: var(--muted); padding: 0 8px; margin-bottom: 12px; }
+  .no-data { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 0.9rem; }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>Off Season</h1>
-  <span>S6 · Tato</span>
-  <div class="sync-dot" id="sync-dot" title="Estado sincronización"></div>
+  <h1>Rutina de Gimnasio</h1>
+  <div class="sync-dot" id="sync-dot"></div>
 </header>
 
-<div class="day-tabs">
-  <button class="day-tab active" data-day="0">Día 1</button>
-  <button class="day-tab" data-day="1">Día 2</button>
-  <button class="day-tab" data-day="2">Día 3</button>
+<div class="main-tabs">
+  <button class="main-tab active" data-screen="training">🏋️ Entreno</button>
+  <button class="main-tab" data-screen="progress">📈 Progreso</button>
 </div>
 
-<div class="date-row">
-  <label>Fecha</label>
-  <input type="date" id="current-date">
+<div id="screen-training" class="active">
+  <div class="day-tabs">
+    <button class="day-tab active" data-day="0">Día 1</button>
+    <button class="day-tab" data-day="1">Día 2</button>
+    <button class="day-tab" data-day="2">Día 3</button>
+  </div>
+  <div class="date-row">
+    <label>Fecha</label>
+    <input type="date" id="current-date">
+  </div>
+  <div id="days-container"></div>
 </div>
 
-<div id="days-container"></div>
+<div id="screen-progress">
+  <p class="progress-screen-title">Seleccioná un ejercicio</p>
+  <select class="ex-selector" id="ex-selector">
+    <option value="">— Elegí un ejercicio —</option>
+  </select>
+  <div id="chart-area"></div>
+</div>
 
 <div class="save-bar">
   <span class="status" id="save-status">Cargando...</span>
@@ -97,7 +119,6 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ── CONFIG SUPABASE ───────────────────────────────────────────────────────────
 const SUPABASE_URL = 'https://iueziaskkmygodxcdioz.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_nzdH1lXI3eEaDbZNQ0Auzg_0Aq5OTPO';
 const USER_KEY = 'tato';
@@ -118,34 +139,25 @@ async function sbFetch(path, options = {}) {
   return text ? JSON.parse(text) : null;
 }
 
-async function loadHistory() {
-  const rows = await sbFetch(`sessions?key=eq.${USER_KEY}&select=date,data`);
-  const hist = {};
-  for (const row of rows) {
-    Object.assign(hist, row.data);
-  }
-  return hist;
+async function loadAllSessions() {
+  return await sbFetch(`sessions?key=eq.${USER_KEY}&select=date,data&order=date.asc`) || [];
 }
 
 async function saveSession(date, sessionData) {
-  // Upsert by date+key
-  const data = buildHistoryFromSession(date, sessionData);
-  // Check if row exists for this date
+  const data = buildSessionData(date, sessionData);
   const existing = await sbFetch(`sessions?key=eq.${USER_KEY}&date=eq.${date}&select=id`);
   if (existing && existing.length > 0) {
     await sbFetch(`sessions?key=eq.${USER_KEY}&date=eq.${date}`, {
-      method: 'PATCH',
-      body: JSON.stringify({ data })
+      method: 'PATCH', body: JSON.stringify({ data })
     });
   } else {
     await sbFetch('sessions', {
-      method: 'POST',
-      body: JSON.stringify({ key: USER_KEY, date, data })
+      method: 'POST', body: JSON.stringify({ key: USER_KEY, date, data })
     });
   }
 }
 
-function buildHistoryFromSession(date, sessionData) {
+function buildSessionData(date, sessionData) {
   const data = {};
   ROUTINE.forEach((day, di) => {
     day.blocks.forEach((block, bi) => {
@@ -160,30 +172,45 @@ function buildHistoryFromSession(date, sessionData) {
   return data;
 }
 
-// ── ROUTINE DATA ──────────────────────────────────────────────────────────────
+function buildHistory(rows) {
+  const hist = {};
+  for (const row of rows) {
+    for (const [histKey, entries] of Object.entries(row.data || {})) {
+      if (!hist[histKey]) hist[histKey] = [];
+      hist[histKey].push(...entries);
+    }
+  }
+  for (const k of Object.keys(hist)) {
+    hist[k].sort((a, b) => a.date.localeCompare(b.date));
+  }
+  return hist;
+}
+
+// ── ROUTINE ───────────────────────────────────────────────────────────────────
+// hasKg: true = campo kg visible, false = solo reps
 const ROUTINE = [
   {
     name: "Día 1",
     blocks: [
       { label: "Activación", exercises: [
-        { name: "KB RDL", sets: 2, reps: "6-8", note: "" },
-        { name: "Rolidos", sets: 2, reps: "6-8", note: "" },
-        { name: "Planchas lat c/ abd", sets: null, reps: "10 x/l", note: "" },
+        { name: "KB RDL", sets: 2, reps: "6-8", note: "", hasKg: false },
+        { name: "Rolidos", sets: 2, reps: "6-8", note: "", hasKg: false },
+        { name: "Planchas lat c/ abd", sets: null, reps: "10 x/l", note: "", hasKg: false },
       ]},
       { label: "Pliométrico", exercises: [
-        { name: "Pogos", sets: 3, reps: "10", note: "" },
-        { name: "Saltos Verticales", sets: 3, reps: "5", note: "" },
-        { name: "Saltos unipodal", sets: 3, reps: "5 c/l", note: "" },
-        { name: "Saltos c/ mancuerna", sets: 3, reps: "4", note: "20kg · máx · no cont." },
+        { name: "Pogos", sets: 3, reps: "10", note: "", hasKg: false },
+        { name: "Saltos Verticales", sets: 3, reps: "5", note: "", hasKg: false },
+        { name: "Saltos unipodal", sets: 3, reps: "5 c/l", note: "", hasKg: false },
+        { name: "Saltos c/ mancuerna", sets: 3, reps: "4", note: "20kg · máx · no cont.", hasKg: true },
       ]},
       { label: "Fuerza", exercises: [
-        { name: "Sentadilla profunda", sets: 5, reps: "4", note: "RPE8 · ref 67.5kg" },
-        { name: "Press de Hombros", sets: 5, reps: "5", note: "RPE8" },
-        { name: "Dominadas", sets: 4, reps: "RIR1", note: "" },
-        { name: "Pecho Inclinado", sets: 3, reps: "5", note: "RPE8" },
-        { name: "Fondos", sets: 3, reps: "4", note: "7kg · RPE8" },
-        { name: "Remo al mentón", sets: 3, reps: "10-12", note: "RIR2" },
-        { name: "Vuelos Laterales", sets: 3, reps: "15", note: "RIR2" },
+        { name: "Sentadilla profunda", sets: 5, reps: "4", note: "RPE8 · ref 67.5kg", hasKg: true },
+        { name: "Press de Hombros", sets: 5, reps: "5", note: "RPE8", hasKg: true },
+        { name: "Dominadas", sets: 4, reps: "RIR1", note: "", hasKg: false },
+        { name: "Pecho Inclinado", sets: 3, reps: "5", note: "RPE8", hasKg: true },
+        { name: "Fondos", sets: 3, reps: "4", note: "7kg · RPE8", hasKg: true },
+        { name: "Remo al mentón", sets: 3, reps: "10-12", note: "RIR2", hasKg: true },
+        { name: "Vuelos Laterales", sets: 3, reps: "15", note: "RIR2", hasKg: true },
       ]}
     ]
   },
@@ -191,22 +218,22 @@ const ROUTINE = [
     name: "Día 2",
     blocks: [
       { label: "Activación", exercises: [
-        { name: "KB RDL", sets: 2, reps: "6-8", note: "" },
-        { name: "Rolidos", sets: 2, reps: "6-8", note: "" },
-        { name: "Planchas lat c/ abd", sets: null, reps: "10 x/l", note: "" },
+        { name: "KB RDL", sets: 2, reps: "6-8", note: "", hasKg: false },
+        { name: "Rolidos", sets: 2, reps: "6-8", note: "", hasKg: false },
+        { name: "Planchas lat c/ abd", sets: null, reps: "10 x/l", note: "", hasKg: false },
       ]},
       { label: "Pliométrico", exercises: [
-        { name: "Pogos", sets: 3, reps: "10", note: "" },
-        { name: "Saltos h continuos", sets: 3, reps: "4", note: "mín contacto" },
-        { name: "Saltos h unipodal", sets: 3, reps: "3 c/l", note: "" },
-        { name: "Salto h unipodal alternado", sets: 3, reps: "3+3", note: "" },
+        { name: "Pogos", sets: 3, reps: "10", note: "", hasKg: false },
+        { name: "Saltos h continuos", sets: 3, reps: "4", note: "mín contacto", hasKg: false },
+        { name: "Saltos h unipodal", sets: 3, reps: "3 c/l", note: "", hasKg: false },
+        { name: "Salto h unipodal alternado", sets: 3, reps: "3+3", note: "", hasKg: false },
       ]},
       { label: "Fuerza", exercises: [
-        { name: "Sentadilla Frontal", sets: 5, reps: "6", note: "RPE7" },
-        { name: "Pecho Plano", sets: 5, reps: "5", note: "RPE8" },
-        { name: "Serrucho", sets: 3, reps: "8-10", note: "RIR2" },
-        { name: "Bíceps con barra", sets: 3, reps: "RIR2", note: "" },
-        { name: "Lagartijas", sets: 4, reps: "RIR2", note: "" },
+        { name: "Sentadilla Frontal", sets: 5, reps: "6", note: "RPE7", hasKg: true },
+        { name: "Pecho Plano", sets: 5, reps: "5", note: "RPE8", hasKg: true },
+        { name: "Serrucho", sets: 3, reps: "8-10", note: "RIR2", hasKg: true },
+        { name: "Bíceps con barra", sets: 3, reps: "RIR2", note: "", hasKg: true },
+        { name: "Lagartijas", sets: 4, reps: "RIR2", note: "", hasKg: false },
       ]}
     ]
   },
@@ -214,22 +241,22 @@ const ROUTINE = [
     name: "Día 3",
     blocks: [
       { label: "Activación", exercises: [
-        { name: "KB RDL", sets: 2, reps: "6-8", note: "" },
-        { name: "Rolidos", sets: 2, reps: "6-8", note: "" },
-        { name: "Planchas lat c/ abd", sets: null, reps: "10 x/l", note: "" },
+        { name: "KB RDL", sets: 2, reps: "6-8", note: "", hasKg: false },
+        { name: "Rolidos", sets: 2, reps: "6-8", note: "", hasKg: false },
+        { name: "Planchas lat c/ abd", sets: null, reps: "10 x/l", note: "", hasKg: false },
       ]},
       { label: "Pliométrico", exercises: [
-        { name: "Drop Jump + Pogo", sets: 3, reps: "1+3", note: "" },
-        { name: "Saltos Verticales", sets: 3, reps: "3", note: "15/12" },
-        { name: "Saltos a profundidad", sets: 6, reps: "1", note: "máx contacto largo" },
+        { name: "Drop Jump + Pogo", sets: 3, reps: "1+3", note: "", hasKg: false },
+        { name: "Saltos Verticales", sets: 3, reps: "3", note: "15/12", hasKg: false },
+        { name: "Saltos a profundidad", sets: 6, reps: "1", note: "máx contacto largo", hasKg: false },
       ]},
       { label: "Fuerza", exercises: [
-        { name: "Peso Muerto", sets: 5, reps: "4", note: "RPE8" },
-        { name: "Dominadas c/ lastre", sets: 5, reps: "5", note: "RPE8" },
-        { name: "Remo Tumbado", sets: 3, reps: "10", note: "RPE8" },
-        { name: "Bíceps con barra", sets: 3, reps: "RIR2", note: "" },
-        { name: "Vuelos Laterales", sets: 3, reps: "15", note: "RIR2" },
-        { name: "Lagartijas", sets: 4, reps: "RIR2", note: "" },
+        { name: "Peso Muerto", sets: 5, reps: "4", note: "RPE8", hasKg: true },
+        { name: "Dominadas c/ lastre", sets: 5, reps: "5", note: "RPE8", hasKg: true },
+        { name: "Remo Tumbado", sets: 3, reps: "10", note: "RPE8", hasKg: true },
+        { name: "Bíceps con barra", sets: 3, reps: "RIR2", note: "", hasKg: true },
+        { name: "Vuelos Laterales", sets: 3, reps: "15", note: "RIR2", hasKg: true },
+        { name: "Lagartijas", sets: 4, reps: "RIR2", note: "", hasKg: false },
       ]}
     ]
   }
@@ -237,9 +264,10 @@ const ROUTINE = [
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let activeDay = 0;
+let activeScreen = 'training';
 let sessionData = {};
 let history = {};
-let dirty = false;
+let allRows = [];
 
 const dateInput = document.getElementById('current-date');
 dateInput.value = new Date().toISOString().slice(0, 10);
@@ -257,11 +285,22 @@ function getSession(d, b, e) {
 }
 
 function setSyncDot(state) {
-  const dot = document.getElementById('sync-dot');
-  dot.className = 'sync-dot ' + state;
+  document.getElementById('sync-dot').className = 'sync-dot ' + state;
 }
 
-// ── RENDER ────────────────────────────────────────────────────────────────────
+// ── MAIN TABS ─────────────────────────────────────────────────────────────────
+document.querySelectorAll('.main-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    activeScreen = tab.dataset.screen;
+    document.querySelectorAll('.main-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('screen-training').classList.toggle('active', activeScreen === 'training');
+    document.getElementById('screen-progress').classList.toggle('active', activeScreen === 'progress');
+    if (activeScreen === 'progress') renderProgressScreen();
+  });
+});
+
+// ── RENDER TRAINING ───────────────────────────────────────────────────────────
 function renderAll() {
   const container = document.getElementById('days-container');
   container.innerHTML = '';
@@ -270,8 +309,7 @@ function renderAll() {
     div.className = 'day-content' + (di === activeDay ? ' active' : '');
     div.id = `day-${di}`;
     const pw = document.createElement('div');
-    pw.className = 'progress-wrap';
-    pw.id = `prog-${di}`;
+    pw.className = 'progress-wrap'; pw.id = `prog-${di}`;
     div.appendChild(pw);
     day.blocks.forEach((block, bi) => {
       const lbl = document.createElement('div');
@@ -301,15 +339,21 @@ function renderExercise(di, bi, ei, ex) {
   const body = document.createElement('div');
   body.className = 'exercise-body';
 
+  const hasKg = ex.hasKg;
+  const thKg = hasKg ? '<th>kg</th>' : '';
   const table = document.createElement('table');
   table.className = 'sets-table';
-  table.innerHTML = `<tr><th>#</th><th>kg</th><th>Reps</th><th>✓</th></tr>`;
+  table.innerHTML = `<tr><th>#</th>${thKg}<th>Reps</th><th>✓</th></tr>`;
+
   sess.sets.forEach((set, si) => {
     const tr = document.createElement('tr');
+    const kgCell = hasKg
+      ? `<td><input type="number" inputmode="decimal" min="0" step="0.5" placeholder="0" value="${set.kg}" data-field="kg" data-set="${si}" data-d="${di}" data-b="${bi}" data-e="${ei}"></td>`
+      : '';
     tr.innerHTML = `
       <td style="color:var(--muted);text-align:center;width:24px">${si + 1}</td>
-      <td><input type="number" inputmode="decimal" placeholder="—" value="${set.kg}" data-field="kg" data-set="${si}" data-d="${di}" data-b="${bi}" data-e="${ei}"></td>
-      <td><input type="text" placeholder="—" value="${set.reps}" data-field="reps" data-set="${si}" data-d="${di}" data-b="${bi}" data-e="${ei}"></td>
+      ${kgCell}
+      <td><input type="number" inputmode="numeric" min="0" step="1" placeholder="0" value="${set.reps}" data-field="reps" data-set="${si}" data-d="${di}" data-b="${bi}" data-e="${ei}"></td>
       <td><button class="done-btn ${set.done ? 'done' : ''}" data-set="${si}" data-d="${di}" data-b="${bi}" data-e="${ei}">${set.done ? '✓' : ''}</button></td>`;
     table.appendChild(tr);
   });
@@ -325,7 +369,10 @@ function renderExercise(di, bi, ei, ex) {
       const he = document.createElement('div');
       he.className = 'history-entry';
       const setsStr = entry.sets.filter(s => s.kg || s.reps)
-        .map(s => `${s.kg ? s.kg + 'kg' : '?'} × ${s.reps || '?'}`).join('  ');
+        .map(s => {
+          if (hasKg) return `${s.kg ? s.kg + 'kg' : '?'} × ${s.reps || '?'}`;
+          return `${s.reps || '?'} reps`;
+        }).join('  ');
       he.innerHTML = `<span class="history-date">${entry.date}</span><span>${setsStr || '—'}</span>`;
       hs.appendChild(he);
     });
@@ -339,7 +386,7 @@ function renderExercise(di, bi, ei, ex) {
     const el = e.target;
     if (!el.dataset.field) return;
     getSession(+el.dataset.d, +el.dataset.b, +el.dataset.e).sets[+el.dataset.set][el.dataset.field] = el.value;
-    markDirty();
+    document.getElementById('save-status').textContent = 'Cambios sin guardar';
     updateProgress(+el.dataset.d);
   });
 
@@ -350,7 +397,6 @@ function renderExercise(di, bi, ei, ex) {
     s.done = !s.done;
     btn.classList.toggle('done', s.done);
     btn.textContent = s.done ? '✓' : '';
-    markDirty();
     updateProgress(+btn.dataset.d);
   });
 
@@ -371,7 +417,6 @@ function updateProgress(di) {
     <div class="progress-text">${done}/${total} sets</div>`;
 }
 
-// ── TABS ──────────────────────────────────────────────────────────────────────
 document.querySelectorAll('.day-tab').forEach(tab => {
   tab.addEventListener('click', () => {
     activeDay = +tab.dataset.day;
@@ -382,12 +427,117 @@ document.querySelectorAll('.day-tab').forEach(tab => {
   });
 });
 
-// ── UTILS ─────────────────────────────────────────────────────────────────────
-function markDirty() {
-  dirty = true;
-  document.getElementById('save-status').textContent = 'Cambios sin guardar';
+// ── PROGRESS SCREEN ───────────────────────────────────────────────────────────
+function populateExSelector() {
+  const sel = document.getElementById('ex-selector');
+  sel.innerHTML = '<option value="">— Elegí un ejercicio —</option>';
+  ROUTINE.forEach((day, di) => {
+    // Only Fuerza block (last block, index 2)
+    const fuerza = day.blocks.find(b => b.label === 'Fuerza');
+    if (!fuerza) return;
+    const bi = day.blocks.indexOf(fuerza);
+    const grp = document.createElement('optgroup');
+    grp.label = day.name;
+    fuerza.exercises.forEach((ex, ei) => {
+      if (!ex.hasKg) return; // only exercises with kg
+      const opt = document.createElement('option');
+      opt.value = `${di}-${bi}-${ei}`;
+      opt.textContent = ex.name;
+      grp.appendChild(opt);
+    });
+    if (grp.children.length > 0) sel.appendChild(grp);
+  });
 }
 
+document.getElementById('ex-selector').addEventListener('change', function() {
+  renderChart(this.value);
+});
+
+function renderChart(histKey) {
+  const area = document.getElementById('chart-area');
+  area.innerHTML = '';
+  if (!histKey) return;
+
+  const entries = history[histKey] || [];
+  const withKg = entries.filter(e => e.sets && e.sets.some(s => parseFloat(s.kg) > 0));
+
+  if (withKg.length === 0) {
+    area.innerHTML = `<div class="no-data">Sin datos todavía.<br>Andá entrenando 💪</div>`;
+    return;
+  }
+
+  const labels = withKg.map(e => e.date);
+  const avgKg = withKg.map(e => {
+    const vals = e.sets.map(s => parseFloat(s.kg)).filter(v => !isNaN(v) && v > 0);
+    return vals.length > 0 ? +(vals.reduce((a,b) => a+b, 0) / vals.length).toFixed(1) : null;
+  });
+
+  const [di, bi, ei] = histKey.split('-').map(Number);
+  const exName = ROUTINE[di].blocks[bi].exercises[ei].name;
+
+  const container = document.createElement('div');
+  container.className = 'chart-container';
+  container.innerHTML = `
+    <div class="chart-title">${exName}</div>
+    <div class="chart-subtitle">Promedio kg por sesión</div>
+    <div id="svg-wrap"></div>`;
+  area.appendChild(container);
+
+  drawLineChart(container.querySelector('#svg-wrap'), labels, avgKg);
+}
+
+function drawLineChart(wrap, labels, values) {
+  const W = wrap.parentElement.clientWidth - 32;
+  const H = 180;
+  const pad = { top: 16, right: 16, bottom: 36, left: 40 };
+  const chartW = W - pad.left - pad.right;
+  const chartH = H - pad.top - pad.bottom;
+  const minV = Math.min(...values) * 0.95;
+  const maxV = Math.max(...values) * 1.05;
+  const range = maxV - minV || 1;
+
+  function xPos(i) { return pad.left + (values.length > 1 ? (i / (values.length - 1)) * chartW : chartW / 2); }
+  function yPos(v) { return pad.top + chartH - ((v - minV) / range) * chartH; }
+
+  const points = values.map((v, i) => ({ x: xPos(i), y: yPos(v), v, label: labels[i] }));
+  const polyline = points.map(p => `${p.x},${p.y}`).join(' ');
+
+  let yTicksHTML = '';
+  for (let i = 0; i <= 4; i++) {
+    const v = minV + (range / 4) * i;
+    const y = yPos(v);
+    yTicksHTML += `
+      <line x1="${pad.left}" y1="${y}" x2="${pad.left + chartW}" y2="${y}" stroke="#2e2e2e" stroke-width="1"/>
+      <text x="${pad.left - 4}" y="${y + 4}" text-anchor="end" fill="#888" font-size="10">${v.toFixed(1)}</text>`;
+  }
+
+  let xLabelsHTML = '';
+  const step = Math.ceil(labels.length / 5);
+  labels.forEach((lbl, i) => {
+    if (i % step === 0 || i === labels.length - 1) {
+      xLabelsHTML += `<text x="${xPos(i)}" y="${H - 4}" text-anchor="middle" fill="#888" font-size="10">${lbl.slice(5)}</text>`;
+    }
+  });
+
+  let dotsHTML = points.map(p => `
+    <circle cx="${p.x}" cy="${p.y}" r="4" fill="#d4ff00"/>
+    <text x="${p.x}" y="${p.y - 8}" text-anchor="middle" fill="#d4ff00" font-size="9">${p.v}</text>`).join('');
+
+  wrap.innerHTML = `<svg width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
+    ${yTicksHTML}
+    <polyline points="${polyline}" fill="none" stroke="#9bb800" stroke-width="2" stroke-linejoin="round"/>
+    ${dotsHTML}
+    ${xLabelsHTML}
+  </svg>`;
+}
+
+function renderProgressScreen() {
+  populateExSelector();
+  const sel = document.getElementById('ex-selector');
+  if (sel.value) renderChart(sel.value);
+}
+
+// ── SAVE / CLEAR ──────────────────────────────────────────────────────────────
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -395,15 +545,13 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2200);
 }
 
-// ── GUARDAR ───────────────────────────────────────────────────────────────────
 document.getElementById('btn-save').addEventListener('click', async () => {
   setSyncDot('loading');
   document.getElementById('save-status').textContent = 'Guardando...';
   try {
     await saveSession(currentDate(), sessionData);
-    // Reload history
-    history = await loadHistory();
-    dirty = false;
+    allRows = await loadAllSessions();
+    history = buildHistory(allRows);
     setSyncDot('ok');
     document.getElementById('save-status').textContent = `Guardado · ${currentDate()}`;
     showToast('Sesión guardada ✓');
@@ -419,7 +567,6 @@ document.getElementById('btn-save').addEventListener('click', async () => {
 document.getElementById('btn-clear').addEventListener('click', () => {
   if (!confirm('¿Borrar los datos de la sesión actual?')) return;
   sessionData = {};
-  dirty = false;
   document.getElementById('save-status').textContent = 'Sin cambios';
   renderAll();
   showToast('Sesión limpiada');
@@ -428,9 +575,10 @@ document.getElementById('btn-clear').addEventListener('click', () => {
 // ── INIT ──────────────────────────────────────────────────────────────────────
 async function init() {
   setSyncDot('loading');
-  document.getElementById('save-status').textContent = 'Cargando historial...';
+  document.getElementById('save-status').textContent = 'Cargando...';
   try {
-    history = await loadHistory();
+    allRows = await loadAllSessions();
+    history = buildHistory(allRows);
     setSyncDot('ok');
     document.getElementById('save-status').textContent = 'Listo';
   } catch(err) {
