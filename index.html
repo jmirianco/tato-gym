@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tato — Off Season S6</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f0f0f; --surface: #1a1a1a; --surface2: #242424;
+    --border: #2e2e2e; --accent: #d4ff00; --accent-dim: #9bb800;
+    --text: #f0f0f0; --muted: #888;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'Barlow', sans-serif; min-height: 100vh; padding: 0 0 90px; }
+  header { background: var(--bg); border-bottom: 2px solid var(--accent); padding: 16px 20px 12px; position: sticky; top: 0; z-index: 100; display: flex; align-items: baseline; gap: 12px; }
+  header h1 { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 1.6rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); }
+  header span { font-family: 'Barlow Condensed', sans-serif; font-weight: 400; font-size: 1rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); margin-left: auto; transition: background 0.3s; }
+  .sync-dot.ok { background: var(--accent); }
+  .sync-dot.err { background: #ff4444; }
+  .sync-dot.loading { background: #ffaa00; animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .day-tabs { display: flex; background: var(--surface); border-bottom: 1px solid var(--border); }
+  .day-tab { flex: 1; padding: 14px 8px; text-align: center; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; border: none; background: transparent; color: var(--muted); border-bottom: 3px solid transparent; transition: color 0.15s, border-color 0.15s; }
+  .day-tab[data-day="0"].active { color: #d4ff00; border-color: #d4ff00; }
+  .day-tab[data-day="1"].active { color: #00d4ff; border-color: #00d4ff; }
+  .day-tab[data-day="2"].active { color: #ff6b35; border-color: #ff6b35; }
+  .day-tab:hover { color: var(--text); }
+  .btn { padding: 6px 16px; border-radius: 4px; border: none; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.06em; cursor: pointer; transition: opacity 0.15s; }
+  .btn:hover { opacity: 0.85; }
+  .btn-accent { background: var(--accent); color: #000; }
+  .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+  .btn-outline:hover { color: var(--text); border-color: var(--muted); }
+  .day-content { display: none; }
+  .day-content.active { display: block; }
+  .block-label { padding: 8px 16px 4px; font-family: 'Barlow Condensed', sans-serif; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-top: 10px; }
+  .exercise-card { margin: 0 12px 8px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .exercise-header { display: flex; align-items: center; gap: 10px; padding: 10px 14px; cursor: pointer; user-select: none; }
+  .exercise-name { flex: 1; font-weight: 600; font-size: 0.95rem; }
+  .exercise-meta { font-size: 0.78rem; color: var(--muted); white-space: nowrap; }
+  .exercise-chevron { color: var(--muted); font-size: 0.8rem; transition: transform 0.2s; }
+  .exercise-card.open .exercise-chevron { transform: rotate(180deg); }
+  .exercise-body { display: none; padding: 0 14px 14px; border-top: 1px solid var(--border); }
+  .exercise-card.open .exercise-body { display: block; }
+  .sets-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.88rem; }
+  .sets-table th { text-align: left; padding: 5px 8px; color: var(--muted); font-weight: 500; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid var(--border); }
+  .sets-table td { padding: 5px 4px; vertical-align: middle; }
+  .sets-table input { width: 100%; background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 5px 8px; border-radius: 4px; font-family: 'Barlow', sans-serif; font-size: 0.88rem; text-align: center; }
+  .sets-table input:focus { outline: none; border-color: var(--accent); }
+  .done-btn { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--border); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: all 0.15s; margin: auto; }
+  .done-btn.done { background: var(--accent); border-color: var(--accent); color: #000; }
+  .history-section { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
+  .history-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 6px; }
+  .history-entry { font-size: 0.8rem; color: var(--muted); padding: 3px 0; border-bottom: 1px solid var(--border); display: flex; gap: 8px; }
+  .history-date { color: var(--accent-dim); min-width: 84px; }
+  .save-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1px solid var(--border); padding: 10px 12px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .save-bar .status { flex: 1; font-size: 0.78rem; color: var(--accent-dim); min-width: 100px; }
+  .toast { position: fixed; top: 70px; right: 16px; background: var(--accent); color: #000; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 8px 18px; border-radius: 4px; font-size: 0.9rem; opacity: 0; transform: translateY(-8px); transition: all 0.2s; pointer-events: none; z-index: 200; }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .progress-wrap { padding: 8px 12px 2px; display: flex; align-items: center; gap: 10px; }
+  .progress-bar { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.3s; }
+  .progress-text { font-size: 0.75rem; color: var(--muted); white-space: nowrap; }
+  .date-row { padding: 8px 12px 4px; display: flex; align-items: center; gap: 8px; }
+  .date-row label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+  .date-row input[type="date"] { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 4px 10px; border-radius: 4px; font-family: 'Barlow', sans-serif; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Off Season</h1>
+  <span>S6 · Tato</span>
+  <div class="sync-dot" id="sync-dot" title="Estado sincronización"></div>
+</header>
+
+<div class="day-tabs">
+  <button class="day-tab active" data-day="0">Día 1</button>
+  <button class="day-tab" data-day="1">Día 2</button>
+  <button class="day-tab" data-day="2">Día 3</button>
+</div>
+
+<div class="date-row">
+  <label>Fecha</label>
+  <input type="date" id="current-date">
+</div>
+
+<div id="days-container"></div>
+
+<div class="save-bar">
+  <span class="status" id="save-status">Cargando...</span>
+  <button class="btn btn-outline" id="btn-clear">Limpiar</button>
+  <button class="btn btn-accent" id="btn-save">Guardar sesión</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG SUPABASE ───────────────────────────────────────────────────────────
+const SUPABASE_URL = 'https://iueziaskkmygodxcdioz.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_nzdH1lXI3eEaDbZNQ0Auzg_0Aq5OTPO';
+const USER_KEY = 'tato';
+
+async function sbFetch(path, options = {}) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    ...options,
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation',
+      ...options.headers
+    }
+  });
+  if (!res.ok) throw new Error(await res.text());
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+
+async function loadHistory() {
+  const rows = await sbFetch(`sessions?key=eq.${USER_KEY}&select=date,data`);
+  const hist = {};
+  for (const row of rows) {
+    Object.assign(hist, row.data);
+  }
+  return hist;
+}
+
+async function saveSession(date, sessionData) {
+  // Upsert by date+key
+  const data = buildHistoryFromSession(date, sessionData);
+  // Check if row exists for this date
+  const existing = await sbFetch(`sessions?key=eq.${USER_KEY}&date=eq.${date}&select=id`);
+  if (existing && existing.length > 0) {
+    await sbFetch(`sessions?key=eq.${USER_KEY}&date=eq.${date}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ data })
+    });
+  } else {
+    await sbFetch('sessions', {
+      method: 'POST',
+      body: JSON.stringify({ key: USER_KEY, date, data })
+    });
+  }
+}
+
+function buildHistoryFromSession(date, sessionData) {
+  const data = {};
+  ROUTINE.forEach((day, di) => {
+    day.blocks.forEach((block, bi) => {
+      block.exercises.forEach((ex, ei) => {
+        const k = keyFor(di, bi, ei);
+        if (!sessionData[k]) return;
+        const histKey = `${di}-${bi}-${ei}`;
+        data[histKey] = [{ date, sets: sessionData[k].sets.map(s => ({...s})) }];
+      });
+    });
+  });
+  return data;
+}
+
+// ── ROUTINE DATA ──────────────────────────────────────────────────────────────
+const ROUTINE = [
+  {
+    name: "Día 1",
+    blocks: [
+      { label: "Activación", exercises: [
+        { name: "KB RDL", sets: 2, reps: "6-8", note: "" },
+        { name: "Rolidos", sets: 2, reps: "6-8", note: "" },
+        { name: "Planchas lat c/ abd", sets: null, reps: "10 x/l", note: "" },
+      ]},
+      { label: "Pliométrico", exercises: [
+        { name: "Pogos", sets: 3, reps: "10", note: "" },
+        { name: "Saltos Verticales", sets: 3, reps: "5", note: "" },
+        { name: "Saltos unipodal", sets: 3, reps: "5 c/l", note: "" },
+        { name: "Saltos c/ mancuerna", sets: 3, reps: "4", note: "20kg · máx · no cont." },
+      ]},
+      { label: "Fuerza", exercises: [
+        { name: "Sentadilla profunda", sets: 5, reps: "4", note: "RPE8 · ref 67.5kg" },
+        { name: "Press de Hombros", sets: 5, reps: "5", note: "RPE8" },
+        { name: "Dominadas", sets: 4, reps: "RIR1", note: "" },
+        { name: "Pecho Inclinado", sets: 3, reps: "5", note: "RPE8" },
+        { name: "Fondos", sets: 3, reps: "4", note: "7kg · RPE8" },
+        { name: "Remo al mentón", sets: 3, reps: "10-12", note: "RIR2" },
+        { name: "Vuelos Laterales", sets: 3, reps: "15", note: "RIR2" },
+      ]}
+    ]
+  },
+  {
+    name: "Día 2",
+    blocks: [
+      { label: "Activación", exercises: [
+        { name: "KB RDL", sets: 2, reps: "6-8", note: "" },
+        { name: "Rolidos", sets: 2, reps: "6-8", note: "" },
+        { name: "Planchas lat c/ abd", sets: null, reps: "10 x/l", note: "" },
+      ]},
+      { label: "Pliométrico", exercises: [
+        { name: "Pogos", sets: 3, reps: "10", note: "" },
+        { name: "Saltos h continuos", sets: 3, reps: "4", note: "mín contacto" },
+        { name: "Saltos h unipodal", sets: 3, reps: "3 c/l", note: "" },
+        { name: "Salto h unipodal alternado", sets: 3, reps: "3+3", note: "" },
+      ]},
+      { label: "Fuerza", exercises: [
+        { name: "Sentadilla Frontal", sets: 5, reps: "6", note: "RPE7" },
+        { name: "Pecho Plano", sets: 5, reps: "5", note: "RPE8" },
+        { name: "Serrucho", sets: 3, reps: "8-10", note: "RIR2" },
+        { name: "Bíceps con barra", sets: 3, reps: "RIR2", note: "" },
+        { name: "Lagartijas", sets: 4, reps: "RIR2", note: "" },
+      ]}
+    ]
+  },
+  {
+    name: "Día 3",
+    blocks: [
+      { label: "Activación", exercises: [
+        { name: "KB RDL", sets: 2, reps: "6-8", note: "" },
+        { name: "Rolidos", sets: 2, reps: "6-8", note: "" },
+        { name: "Planchas lat c/ abd", sets: null, reps: "10 x/l", note: "" },
+      ]},
+      { label: "Pliométrico", exercises: [
+        { name: "Drop Jump + Pogo", sets: 3, reps: "1+3", note: "" },
+        { name: "Saltos Verticales", sets: 3, reps: "3", note: "15/12" },
+        { name: "Saltos a profundidad", sets: 6, reps: "1", note: "máx contacto largo" },
+      ]},
+      { label: "Fuerza", exercises: [
+        { name: "Peso Muerto", sets: 5, reps: "4", note: "RPE8" },
+        { name: "Dominadas c/ lastre", sets: 5, reps: "5", note: "RPE8" },
+        { name: "Remo Tumbado", sets: 3, reps: "10", note: "RPE8" },
+        { name: "Bíceps con barra", sets: 3, reps: "RIR2", note: "" },
+        { name: "Vuelos Laterales", sets: 3, reps: "15", note: "RIR2" },
+        { name: "Lagartijas", sets: 4, reps: "RIR2", note: "" },
+      ]}
+    ]
+  }
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let activeDay = 0;
+let sessionData = {};
+let history = {};
+let dirty = false;
+
+const dateInput = document.getElementById('current-date');
+dateInput.value = new Date().toISOString().slice(0, 10);
+function currentDate() { return dateInput.value; }
+function keyFor(d, b, e) { return `D${d}-B${b}-E${e}`; }
+
+function getSession(d, b, e) {
+  const k = keyFor(d, b, e);
+  if (!sessionData[k]) {
+    const ex = ROUTINE[d].blocks[b].exercises[e];
+    const n = ex.sets || 3;
+    sessionData[k] = { sets: Array.from({length: n}, () => ({kg: '', reps: '', done: false})) };
+  }
+  return sessionData[k];
+}
+
+function setSyncDot(state) {
+  const dot = document.getElementById('sync-dot');
+  dot.className = 'sync-dot ' + state;
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function renderAll() {
+  const container = document.getElementById('days-container');
+  container.innerHTML = '';
+  ROUTINE.forEach((day, di) => {
+    const div = document.createElement('div');
+    div.className = 'day-content' + (di === activeDay ? ' active' : '');
+    div.id = `day-${di}`;
+    const pw = document.createElement('div');
+    pw.className = 'progress-wrap';
+    pw.id = `prog-${di}`;
+    div.appendChild(pw);
+    day.blocks.forEach((block, bi) => {
+      const lbl = document.createElement('div');
+      lbl.className = 'block-label';
+      lbl.textContent = block.label;
+      div.appendChild(lbl);
+      block.exercises.forEach((ex, ei) => div.appendChild(renderExercise(di, bi, ei, ex)));
+    });
+    container.appendChild(div);
+  });
+  updateProgress(activeDay);
+}
+
+function renderExercise(di, bi, ei, ex) {
+  const sess = getSession(di, bi, ei);
+  const card = document.createElement('div');
+  card.className = 'exercise-card';
+
+  const header = document.createElement('div');
+  header.className = 'exercise-header';
+  header.innerHTML = `
+    <div class="exercise-name">${ex.name}</div>
+    <div class="exercise-meta">${ex.sets ? ex.sets + 'x' : ''}${ex.reps}${ex.note ? ' · ' + ex.note : ''}</div>
+    <div class="exercise-chevron">▾</div>`;
+  header.addEventListener('click', () => card.classList.toggle('open'));
+
+  const body = document.createElement('div');
+  body.className = 'exercise-body';
+
+  const table = document.createElement('table');
+  table.className = 'sets-table';
+  table.innerHTML = `<tr><th>#</th><th>kg</th><th>Reps</th><th>✓</th></tr>`;
+  sess.sets.forEach((set, si) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="color:var(--muted);text-align:center;width:24px">${si + 1}</td>
+      <td><input type="number" inputmode="decimal" placeholder="—" value="${set.kg}" data-field="kg" data-set="${si}" data-d="${di}" data-b="${bi}" data-e="${ei}"></td>
+      <td><input type="text" placeholder="—" value="${set.reps}" data-field="reps" data-set="${si}" data-d="${di}" data-b="${bi}" data-e="${ei}"></td>
+      <td><button class="done-btn ${set.done ? 'done' : ''}" data-set="${si}" data-d="${di}" data-b="${bi}" data-e="${ei}">${set.done ? '✓' : ''}</button></td>`;
+    table.appendChild(tr);
+  });
+  body.appendChild(table);
+
+  const histKey = `${di}-${bi}-${ei}`;
+  const exHistory = (history[histKey] || []).slice(-3).reverse();
+  if (exHistory.length > 0) {
+    const hs = document.createElement('div');
+    hs.className = 'history-section';
+    hs.innerHTML = `<div class="history-title">Últimas sesiones</div>`;
+    exHistory.forEach(entry => {
+      const he = document.createElement('div');
+      he.className = 'history-entry';
+      const setsStr = entry.sets.filter(s => s.kg || s.reps)
+        .map(s => `${s.kg ? s.kg + 'kg' : '?'} × ${s.reps || '?'}`).join('  ');
+      he.innerHTML = `<span class="history-date">${entry.date}</span><span>${setsStr || '—'}</span>`;
+      hs.appendChild(he);
+    });
+    body.appendChild(hs);
+  }
+
+  card.appendChild(header);
+  card.appendChild(body);
+
+  card.addEventListener('input', e => {
+    const el = e.target;
+    if (!el.dataset.field) return;
+    getSession(+el.dataset.d, +el.dataset.b, +el.dataset.e).sets[+el.dataset.set][el.dataset.field] = el.value;
+    markDirty();
+    updateProgress(+el.dataset.d);
+  });
+
+  card.addEventListener('click', e => {
+    const btn = e.target.closest('.done-btn');
+    if (!btn) return;
+    const s = getSession(+btn.dataset.d, +btn.dataset.b, +btn.dataset.e).sets[+btn.dataset.set];
+    s.done = !s.done;
+    btn.classList.toggle('done', s.done);
+    btn.textContent = s.done ? '✓' : '';
+    markDirty();
+    updateProgress(+btn.dataset.d);
+  });
+
+  return card;
+}
+
+function updateProgress(di) {
+  let total = 0, done = 0;
+  ROUTINE[di].blocks.forEach((block, bi) => {
+    block.exercises.forEach((ex, ei) => {
+      getSession(di, bi, ei).sets.forEach(s => { total++; if (s.done) done++; });
+    });
+  });
+  const pct = total > 0 ? Math.round(done / total * 100) : 0;
+  const wrap = document.getElementById(`prog-${di}`);
+  if (wrap) wrap.innerHTML = `
+    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div class="progress-text">${done}/${total} sets</div>`;
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────────────
+document.querySelectorAll('.day-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    activeDay = +tab.dataset.day;
+    document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    document.querySelectorAll('.day-content').forEach(d => d.classList.remove('active'));
+    document.getElementById(`day-${activeDay}`).classList.add('active');
+  });
+});
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+function markDirty() {
+  dirty = true;
+  document.getElementById('save-status').textContent = 'Cambios sin guardar';
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ── GUARDAR ───────────────────────────────────────────────────────────────────
+document.getElementById('btn-save').addEventListener('click', async () => {
+  setSyncDot('loading');
+  document.getElementById('save-status').textContent = 'Guardando...';
+  try {
+    await saveSession(currentDate(), sessionData);
+    // Reload history
+    history = await loadHistory();
+    dirty = false;
+    setSyncDot('ok');
+    document.getElementById('save-status').textContent = `Guardado · ${currentDate()}`;
+    showToast('Sesión guardada ✓');
+    renderAll();
+  } catch(err) {
+    setSyncDot('err');
+    document.getElementById('save-status').textContent = 'Error al guardar';
+    showToast('Error ✗');
+    console.error(err);
+  }
+});
+
+document.getElementById('btn-clear').addEventListener('click', () => {
+  if (!confirm('¿Borrar los datos de la sesión actual?')) return;
+  sessionData = {};
+  dirty = false;
+  document.getElementById('save-status').textContent = 'Sin cambios';
+  renderAll();
+  showToast('Sesión limpiada');
+});
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+async function init() {
+  setSyncDot('loading');
+  document.getElementById('save-status').textContent = 'Cargando historial...';
+  try {
+    history = await loadHistory();
+    setSyncDot('ok');
+    document.getElementById('save-status').textContent = 'Listo';
+  } catch(err) {
+    setSyncDot('err');
+    document.getElementById('save-status').textContent = 'Sin conexión';
+    console.error(err);
+  }
+  renderAll();
+}
+
+init();
+</script>
+</body>
+</html>
